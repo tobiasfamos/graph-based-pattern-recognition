@@ -3,8 +3,8 @@
 # Name: 
 # Matriculation Number:
 #
-# Name:
-# Matriculation Number:
+# Name: Brian Schweigler
+# Matriculation Number: 16-102-071
 #
 #######################
 
@@ -13,6 +13,10 @@ from typing import List
 
 import networkx as nx
 import numpy as np
+import csv
+import os
+import matplotlib.pyplot as plt
+import utils
 
 from utils import load_graph, draw_graph, COLOR_MAP, NODE_LABEL
 
@@ -30,8 +34,20 @@ def part1() -> List[nx.Graph]:
     Returns:
         The list of loaded graphs
     """
-    # Code here
-    return None
+    graph_list = []
+    i = 0
+    for file in os.scandir('graphs'):  # For loop through files
+        if not file.name.endswith('.graphml'):  # If the file is not an .graphml
+            continue  # Do nothing and go to next iteration
+        G = nx.read_graphml(file.path)
+        graph_list.append(G)
+        nx.draw(G, with_labels=True, font_weight='bold', node_color=list(utils.COLOR_MAP.values())[0:len(G.nodes())])
+        # TODO Does this work on non-windows?
+        plt.savefig("drawings/graph_" + str(i))
+        plt.show()
+        i = i+1
+
+    return graph_list
 
 
 #################
