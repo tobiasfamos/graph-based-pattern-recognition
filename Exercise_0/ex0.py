@@ -67,12 +67,18 @@ def naive_graph_isomorphism(graph1: nx.Graph, graph2: nx.Graph) -> bool:
         Returns True if the input graphs are isomorphic, else False.
     """
     # Code here
+
+    if ((len(graph1.nodes()) == len(graph2.nodes)) and
+            (len(graph1.edges()) == len(graph2.edges)) and
+            (set(graph1.nodes().keys()) == set(graph2.nodes().keys()))):
+        return True
+
     return False
 
 
 def part2(graphs: List[nx.Graph]) -> None:
     """
-    1. Complete 'naive_graph_isomorphism(graph1, graph2)'
+    1. Complete 'naive_graph_isomorphism(graph1, graph2)' X
     2. Construct an NxN matrix in which each element represents
        the result of the isomorphic test between two graphs.
        The value at the intersection of row i and column j indicating
@@ -84,6 +90,10 @@ def part2(graphs: List[nx.Graph]) -> None:
 
     """
     # Code here
+    for graph1 in graphs:
+        for graph2 in graphs:
+            is_ismorph = naive_graph_isomorphism(graph1, graph2)
+            #TODO Use above value to construct matrix
     pass
 
 
