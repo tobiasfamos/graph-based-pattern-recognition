@@ -25,6 +25,14 @@ NODE_LABEL = 'x'
 #   UTILS     #
 ###############
 
+def get_node_colors(graph: nx.Graph):
+    node_colors = []
+    id_to_x_map = graph.nodes(data="x")
+    for node in graph:
+        x_value = id_to_x_map[node]
+        node_colors.append(COLOR_MAP[x_value])
+    return node_colors
+
 def load_graph(filename: str) -> nx.Graph:
     """
     Load the **file.graphml** as a **nx.Graph**.
@@ -55,7 +63,12 @@ def draw_graph(graph: nx.Graph,
         node_color: A list of strings representing the color of each node in the graph.
         layout: A layout function that takes a graph as input and returns a dictionary of node positions
                 If None, the **nx.kamada_kawai_layout** layout will be used.
-
     """
-    # Code here
-    pass
+    if layout == None:
+        layout = nx.layout.bipartite_layout
+    positions = layout(graph)
+    nx.draw(graph, labels=labels, with_labels = True, node_color=node_color, pos=positions)
+    plt.savefig(filename)
+    plt.clf()
+
+

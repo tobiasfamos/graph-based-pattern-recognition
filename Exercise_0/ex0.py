@@ -13,13 +13,18 @@ from typing import List
 
 import networkx as nx
 import numpy as np
+from utils import load_graph, draw_graph, COLOR_MAP, NODE_LABEL, get_node_colors
 
-from utils import load_graph, draw_graph, COLOR_MAP, NODE_LABEL
+import os
 
 
 #################
 #    Part 1     #
 #################
+
+def turn_name_to_png(filename : str):
+    name = filename.split(".")[0]
+    return name + ".png"
 
 def part1() -> List[nx.Graph]:
     """
@@ -30,8 +35,15 @@ def part1() -> List[nx.Graph]:
     Returns:
         The list of loaded graphs
     """
-    # Code here
-    return None
+    list_of_graphs = []
+    for filename in os.listdir("Exercise_0/graphs"):
+        png_file_name = turn_name_to_png(filename)
+        graph = load_graph("Exercise_0/graphs/" + filename)
+        list_of_graphs.append(graph)
+        node_labels = dict(graph.nodes(data="x"))
+        draw_graph(graph, "Exercise_0/drawings/"+png_file_name, node_labels, get_node_colors(graph), nx.layout.planar_layout)
+        
+    return list_of_graphs
 
 
 #################

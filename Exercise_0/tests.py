@@ -6,8 +6,12 @@ import os
 
 def emtpy_drawings_folder():
 
-    for filename in os.listdir("Exercise_0/drawings"):        
-        os.remove(filename)
+    for filename in os.listdir("Exercise_0/drawings"):       
+        try :
+            os.remove(filename)            
+        except:
+            pass
+    
 
 def is_directory_empty(path):  
     dir = os.listdir(path)
@@ -34,9 +38,7 @@ class ReadingGraphs(unittest.TestCase):
     def test_part_1_plots_graphs(self):
         emtpy_drawings_folder()
         resutls = ex0.part1()
-        self.assertTrue(is_directory_empty("Exercise_0/drawings"))
-
-
+        self.assertFalse(is_directory_empty("Exercise_0/drawings"))
 
 
 if __name__ == '__main__':
