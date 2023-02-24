@@ -89,12 +89,20 @@ def part2(graphs: List[nx.Graph]) -> None:
         graphs: A list of networkx graph objects
 
     """
-    # Code here
-    for graph1 in graphs:
-        for graph2 in graphs:
-            is_ismorph = naive_graph_isomorphism(graph1, graph2)
-            #TODO Use above value to construct matrix
-    pass
+    matrix = []
+    for graph in graphs:
+        current_row = []
+        for compare_to in graphs:
+            if(naive_graph_isomorphism(graph, compare_to)):
+                current_row.append(1)
+            else: 
+                current_row.append(0)
+        matrix.append(current_row)
+
+        with open('./results/naive_isomorphic_test.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(matrix)
+
 
 
 def main():
