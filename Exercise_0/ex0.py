@@ -62,8 +62,8 @@ def naive_graph_isomorphism(graph1: nx.Graph, graph2: nx.Graph) -> bool:
     Returns:
         Returns True if the input graphs are isomorphic, else False.
     """
-    # Code here
-    return False
+
+    return naive_graph_isomorphism(graph1, graph2)
 
 
 def part2(graphs: List[nx.Graph]) -> None:

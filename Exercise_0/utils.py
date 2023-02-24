@@ -71,4 +71,20 @@ def draw_graph(graph: nx.Graph,
     plt.savefig(filename)
     plt.clf()
 
+def compare_graphs_naive(graph_1: nx.Graph, graph_2: nx.Graph)-> bool:
+    same_node_count = len(graph_1.nodes()) == len(graph_2.nodes())
+    same_edge_count = len(graph_1.edges()) == len(graph_1.edges())
+
+    labels_1 = dict(graph_1.nodes(data="x"))
+    labels_2 = dict(graph_2.nodes(data="x"))
+    
+
+    number_values_1 = len(set(labels_1.values()))
+    number_values_2 = len(set(labels_2.values()))
+
+    same_label_count = number_values_1 == number_values_2
+
+    return same_node_count and same_edge_count and same_label_count
+
+
 
