@@ -13,9 +13,10 @@ from typing import List
 
 import networkx as nx
 import numpy as np
-from utils import load_graph, draw_graph, COLOR_MAP, NODE_LABEL, get_node_colors
+from utils import load_graph, draw_graph, COLOR_MAP, NODE_LABEL, get_node_colors, compare_graphs_naive
 
 import os
+import csv
 
 
 #################
@@ -63,7 +64,7 @@ def naive_graph_isomorphism(graph1: nx.Graph, graph2: nx.Graph) -> bool:
         Returns True if the input graphs are isomorphic, else False.
     """
 
-    return naive_graph_isomorphism(graph1, graph2)
+    return compare_graphs_naive(graph1, graph2)
 
 
 def part2(graphs: List[nx.Graph]) -> None:
@@ -79,9 +80,19 @@ def part2(graphs: List[nx.Graph]) -> None:
         graphs: A list of networkx graph objects
 
     """
-    # Code here
-    pass
+    matrix = []
+    for graph in graphs:
+        current_row = []
+        for compare_to in graphs:
+            if(naive_graph_isomorphism(graph, compare_to)):
+                current_row.append(1)
+            else: 
+                current_row.append(0)
+        matrix.append(current_row)
 
+        with open('Exercise_0/results/naive_isomorphic_test.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(matrix)
 
 def main():
     # Run part 1
