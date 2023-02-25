@@ -79,12 +79,12 @@ def compare_graphs_naive(graph_1: nx.Graph, graph_2: nx.Graph)-> bool:
     labels_2 = dict(graph_2.nodes(data="x"))
     
 
-    number_values_1 = len(set(labels_1.values()))
-    number_values_2 = len(set(labels_2.values()))
+    number_values_1 = set(labels_1.values())
+    number_values_2 = set(labels_2.values())
 
-    same_label_count = number_values_1 == number_values_2
+    same_labels = number_values_1 == number_values_2
 
-    return same_node_count and same_edge_count and same_label_count
+    return same_node_count and same_edge_count and same_labels
 
 
 

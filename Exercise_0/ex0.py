@@ -95,6 +95,8 @@ def part2(graphs: List[nx.Graph]) -> None:
             writer.writerows(matrix)
 
 def main():
+    # For Windows machines, the following line needs to be uncommented, that points to the project root
+    # os.chdir('D:\Git\graph-based-pattern-recognition')
     # Run part 1
     graphs = part1()
 
