@@ -36,7 +36,7 @@ B is a tree, as every node has at most one parent and at least 1 or more childre
 
 C is a graph with unique nodel labels. 
 
-D is simply a directed graph.
+D is simply an ordered (directed) graph.
 
 ### 3. (a) Suppose N(n, k) is the number of non-isomorphic graphs with n nodes and k edges. Find N(4, 3).
 
@@ -55,3 +55,53 @@ The size of a graph is the number of nodes, according to the lecture.
 (Might have missed one or two, but I think this is all of them)
 
 It should be 11 in total.
+
+### 4. Determine whether the three unlabeled graphs g1, g2 and g3 given in the figure above are isomorphic. Formally, for any isomorphic graph pair gi, gj explicitly determine the isomorphism f : Vi → Vj .
+
+At a glance, it seems that all nodes of these graphs have the same degree.
+
+v1 neighbors: v2, v5, v5  
+w1 neighbors: w2, w3, w4  
+x1 neighbors: x4, x5, x6
+
+v2 neighbors: v1, v6, v3  
+w2 neighbors: w1, w3, w5  
+x2 neighbors: x4, x5, x6
+
+v3 neighbors: v2, v4, v5  
+w3 neighbors: w1, w2, w6  
+x3 neighbors: x4, x5, x6
+
+v4 neighbors: v1, v3, v5  
+w4 neighbors: w1, w5, w6  
+x4 neighbors: x1, x2, x3
+
+v5 neighbors: v1, v3, v6  
+w5 neighbors: w2, w4, w6  
+x5 neighbors: x1, x2, x3
+
+v6 neighbors: v2, v4, v5  
+w6 neighbors: w3, w4, w5  
+x6 neighbors: x1, x2, x3
+
+
+* f(v1) = w1  
+* f(v2) = w3
+* f(v4) = w4
+* f(v5) = w4
+* f(v6) = w6
+* f(v3) = w2  
+##### -> g1 and g2 are ismorphic.
+
+##### For g3 this is not the case, as it is a bipartite graph.  
+Going by the explicit ismorphism, we can already see that it will not work.  
+If f(v1) -> x1, then f(v2) -> x4, f(v4) -> x6, and f(v5) -> x5.    
+f(v3) -> x3.  
+f(v6) -> x6.
+
+Neighbors of v2 are v4, v5, v6  .
+The neighbors of f(v2)=x4 are x1, x2, x3.  
+x1 does not correspond to v4, v5 or v6, so the isomorphism is not correct.
+
+### 5. Compute the association graph on the following two labeled graphs and find the maximum clique in it (different shades of gray represent different node labels).
+
