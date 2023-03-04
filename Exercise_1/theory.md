@@ -105,3 +105,10 @@ x1 does not correspond to v4, v5 or v6, so the isomorphism is not correct.
 
 ### 5. Compute the association graph on the following two labeled graphs and find the maximum clique in it (different shades of gray represent different node labels).
 
+![](\figs\ex_5.PNG)
+
+Maximum clique given our representation is  
+[(1, 1'), (2, 2'), (3, 3'), (4, 4')]
+
+### 6. For each paper briefly describe how the underlying patterns/objects are actually represented as a graph g = (V,E, μ, ν). In particular, elaborate on the semantic of both nodes and edges as well as the corresponding labeling functions.
+
