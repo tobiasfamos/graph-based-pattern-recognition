@@ -112,3 +112,14 @@ Maximum clique given our representation is
 
 ### 6. For each paper briefly describe how the underlying patterns/objects are actually represented as a graph g = (V,E, μ, ν). In particular, elaborate on the semantic of both nodes and edges as well as the corresponding labeling functions.
 
+* Malware classification:
+  * Here they have the concept of Call Graph, "a directed graph G with vertex set V=V(G), representing the functions, and edge set E=E(G), where E(G) ⊆ V(G)×V(G), in correspondence with the function calls."
+    * So nodes are the functions
+    * Edges are directed and show what functions call what other functions.
+    * The node labels are simply the function names, while edges are not labeled.
+* Fingerprint Classification
+  * Here they use planar graphs which are then matched to each other and have a corresponding graph edit distance.
+    * Each pixel in a window as a graph node without attributes
+    * Edge generated in two, out of eight, possible directions that best match the vector orthogonal to the average window gradient.
+    * "Simple edit cost function that assigns constant costs pn to node insertions and deletions, and constant costs pe to edge insertions and deletions"
+    * NMote that nodes are unlabeled!
