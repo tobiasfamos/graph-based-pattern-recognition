@@ -17,28 +17,40 @@ from utils import load_graph, load_all_graphs, draw_graph, draw_all_graphs
 # You can potentially add more code here (constants, functions, ...)
 
 
-def _ullman_recursive(mat: np.mat, g1: nx.Graph, g2: nx.Graph) -> bool:
+def _ullman_recursive(adj_u: list, adj_v: list, P: list, Q: list) -> bool:
     """
     Recursive part of the Ullman's algorithm
 
     Args:
-        mat: Initialized Ullman matrix
-        g1: A networkx graph object
-        g2: A networkx graph object
+        adj_u: Adjacency matrix of g1 as a list
+        adj_v: Adjacency matrix of g2 as a list
+        P: List of nodes of g1
+        Q: List of nodes of g2
 
     Returns:
         True if g1 is a subgraph of g2 and False otherwise
     """
-    # Code here
-    for w in range(1, g1.number_of_nodes()):  # Line 3 in Alg 2
-        for w2 in range(1, g2.number_of_nodes()):  # Line 4 in Alg 2
-            # TODO The following line, what exactly is u, v, or rather A in Serie_1.pdf
-            # if mat[u, w2 - 1] != mat[v, w2 - 1]:  # Line 5 in Alg 2 TODO!
-                    mat[w - 1, w2 - 1] = 0  # Line 6 in Alg 2
-        for row in range(0, mat.shape[0]):  # Line 8 in Alg 2
-            if mat[row, :].all() == 0:  # Line 8 in Alg 2
-                return False  # Line 9 in Alg 2
-    return True
+
+    # Base case: all vertices have been matched
+    if not P:
+        return True
+
+    # Select the next vertex to match
+    v = Q[0]
+
+    # Try to match u with each vertex in P
+    for u in P:
+        if adj_u[u][u] == adj_v[v][v] and all(adj_u[u][w] == adj_v[v][q] for q, w in enumerate(Q) if w != v):
+            # Found a valid match, update the partial mapping
+            P.remove(u)
+            Q.remove(v)
+            if _ullman_recursive(adj_u, adj_v, P, Q):
+                return True
+            P.append(u)
+            Q.append(v)
+
+        # No valid match found for u
+        return False
 
 
 def Ullman(g1: nx.Graph, g2: nx.Graph) -> bool:
@@ -52,20 +64,15 @@ def Ullman(g1: nx.Graph, g2: nx.Graph) -> bool:
     Returns:
         True if g1 is a subgraph of g2 and False otherwise
     """
-    ullman_mat = np.zeros((g1.number_of_nodes(), g2.number_of_nodes()))
-    # Initializing future match table f(u, v) [lines 1 and 2 in Algorithm 2]
-    for u in range(1, g1.number_of_nodes()):
-        for v in range(1, g2.number_of_nodes()):
-            if len(g1.edges(g1.nodes[u])) <= len(g2.edges(g2.nodes[v])):
-                ullman_mat[u - 1, v - 1] = 1
-    #           else:
-    #               ullman_mat[s, t] = 0
-    print(ullman_mat)
-    _ullman_recursive(ullman_mat, g1, g2)
+    adj_u = nx.adjacency_matrix(g1).todense().tolist()
+    adj_v = nx.adjacency_matrix(g2).todense().tolist()
 
-    if ullman_mat.all() == 1:
-        return True
-    return False
+    p, q = list(g1.nodes()), list(g2.nodes())
+    # TODO If respecting nodel labels, then none will return true I'd assume
+    if len(p) != len(q) or set(g1.nodes) != set(g2.nodes):  # if differing length or differing node labels, return false
+        return False
+
+    return _ullman_recursive(adj_u, adj_v, p, q)
 
 
 if __name__ == '__main__':
@@ -76,12 +83,12 @@ if __name__ == '__main__':
     draw_all_graphs(graphs, "./graphs", False)
 
     # 2. Perform the Ullman's subgraph isomorphic test between all pairs of graphs.
-    matrix = np.zeros((len(graphs), len(graphs)))
-    for i in range(len(graphs)):
-        for j in range(len(graphs)):
-            if Ullman(graphs[i], graphs[j]):
-                matrix[i, j] = 1
+    matrix = np.zeros((len(graphs), len(graphs)), dtype=int)
+    for u in range(len(graphs)):
+        for v in range(len(graphs)):
+            if u == v:
+                matrix[u, v] = 1  # Graphs are identical
+            else:
+                matrix[u, v] = int(Ullman(graphs[u], graphs[v]))
 
-    np.savetxt("./results/ullman_subgraph_isomorphism.csv", matrix, fmt="%f", delimiter=",")
-
-    pass
+    np.savetxt("./results/ullman_subgraph_isomorphism.csv", matrix, fmt="%i", delimiter=",")
