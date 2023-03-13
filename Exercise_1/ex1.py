@@ -12,46 +12,11 @@ import networkx as nx
 import numpy as np
 import copy
 
-from utils import load_graph, load_all_graphs, draw_graph, draw_all_graphs
+from utils import load_all_graphs, draw_all_graphs
 
 
-# You can potentially add more code here (constants, functions, ...)
-
-
-def _ullman_recursive(adj_u: list, adj_v: list, P: list, Q: list) -> bool:
-    """
-    Recursive part of the Ullman's algorithm
-
-    Args:
-        adj_u: Adjacency matrix of g1 as a list
-        adj_v: Adjacency matrix of g2 as a list
-        P: List of nodes of g1
-        Q: List of nodes of g2
-
-    Returns:
-        True if g1 is a subgraph of g2 and False otherwise
-    """
-
-    # Base case: all vertices have been matched
-    if not P:
-        return True
-
-    # Select the next vertex to match
-    v = Q[0]
-
-    # Try to match u with each vertex in P
-    for u in P:
-        if adj_u[u][u] == adj_v[v][v] and all(adj_u[u][w] == adj_v[v][q] for q, w in enumerate(Q) if w != v):
-            # Found a valid match, update the partial mapping
-            P.remove(u)
-            Q.remove(v)
-            if _ullman_recursive(adj_u, adj_v, P, Q):
-                return True
-            P.append(u)
-            Q.append(v)
-
-        # No valid match found for u
-        return False
+def _ullman_recursive():
+    pass
 
 
 class Mapping_Node:
