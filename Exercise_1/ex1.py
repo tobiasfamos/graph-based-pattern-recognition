@@ -67,7 +67,9 @@ class Mapping_Node:
         self.next_nodes.append(child)
         child.set_parent(self)
 
-    def get_unused_nodes(self, g1: nx.Graph, g2: nx.Graph):
+    def get_nodes_for_next_level(self, g1: nx.Graph, g2: nx.Graph, future_match_table):
+        """ Takes the two graphs, and the future match table. It determines any unused nodes that are still
+         possible based on the future match table. """
         nodes_g1 = list(g1.nodes())
         nodes_g2 = list(g2.nodes())
         current = self
@@ -75,7 +77,11 @@ class Mapping_Node:
             nodes_g1.remove(current.node_1)
             nodes_g2.remove(current.node_2)
             current = current.parent
-        return nodes_g1, nodes_g2
+        if(len(nodes_g1)):
+            node_g1 = nodes_g1[0]
+            return node_g1, nodes_g2
+        else:
+            return None, None
 
     def has_same_structure(self, to, g1: nx.Graph, g2: nx.Graph):
         return g1.has_edge(self.node_1, to.node_1) == g2.has_edge(self.node_2, to.node_2)
@@ -106,19 +112,20 @@ def is_isomorphic_brute_force(g1: nx.Graph, g2: nx.Graph):
     root_node = Mapping_Node(None, None)
     nodes_g1 = list(g1.nodes())
     nodes_g2 = list(g2.nodes())
+    future_match_table = build_future_match_table(g1, g2)
     # Construct first level
     construct_a_level(root_node, nodes_g1[0], nodes_g2, g1, g2)
-    can_be_reached = build_tree_recursive_has_leaf_been_reached(root_node, g1, g2)
+    can_be_reached = build_tree_recursive_has_leaf_been_reached(root_node, g1, g2, future_match_table)
     return can_be_reached
 
 
-def build_tree_recursive_has_leaf_been_reached(current_mapping_node, g1, g2):
+def build_tree_recursive_has_leaf_been_reached(current_mapping_node, g1, g2, future_match_table):
     can_be_reached = False
     for child in current_mapping_node.next_nodes:
-        unused_nodes_g1, unused_nodes_g2 = child.get_unused_nodes(g1, g2)
-        if (len(unused_nodes_g1)):
-            construct_a_level(child, unused_nodes_g1[0], unused_nodes_g2, g1, g2)
-            can_be_reached = build_tree_recursive_has_leaf_been_reached(child, g1, g2)
+        next_node_g1, unused_nodes_g2 = child.get_nodes_for_next_level(g1, g2, future_match_table)
+        if (next_node_g1):
+            construct_a_level(child, next_node_g1, unused_nodes_g2, g1, g2)
+            can_be_reached = build_tree_recursive_has_leaf_been_reached(child, g1, g2, future_match_table)
         else:
             can_be_reached = True
         if(can_be_reached):
@@ -130,7 +137,7 @@ def build_future_match_table(g1: nx.Graph, g2:nx.Graph):
     nodes_g2 = list(g2.nodes())
     future_match_table = [ [0]*len(nodes_g2) for i in range(len(nodes_g1))]
     for index_1 in range(0, len(nodes_g1)):
-        for index_2 in range(0, len(nodes_g1)):
+        for index_2 in range(0, len(nodes_g2)):
             if g1.degree(nodes_g1[index_1]) <= g2.degree(nodes_g2[index_2]):
                 future_match_table[index_1][index_2] = 1
     return future_match_table
