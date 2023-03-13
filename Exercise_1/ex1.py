@@ -10,6 +10,7 @@
 
 import networkx as nx
 import numpy as np
+import copy
 
 from utils import load_graph, load_all_graphs, draw_graph, draw_all_graphs
 
@@ -62,12 +63,15 @@ class Mapping_Node:
 
     def set_parent(self, parent):
         self.parent = parent
+    
+    def set_future_match_table(self, future_match_table):
+        self.future_match_table = future_match_table
 
     def add_child(self, child):
         self.next_nodes.append(child)
         child.set_parent(self)
 
-    def get_nodes_for_next_level(self, g1: nx.Graph, g2: nx.Graph, future_match_table):
+    def get_nodes_for_next_level(self, g1: nx.Graph, g2: nx.Graph):
         """ Takes the two graphs, and the future match table. It determines any unused nodes that are still
          possible based on the future match table. """
         nodes_g1 = list(g1.nodes())
@@ -80,7 +84,7 @@ class Mapping_Node:
         if (len(nodes_g1)):
             node_g1 = nodes_g1[0]
             for node in nodes_g2:
-                if (not might_be_possible_mapping(node_g1, node, g1, g2, future_match_table)):
+                if (not might_be_possible_mapping(node_g1, node, g1, g2, self.future_match_table)):
                     nodes_g2.remove(node)
             return node_g1, nodes_g2
         else:
@@ -101,6 +105,33 @@ class Mapping_Node:
         # Compare the node g2 and g1 in relation to all the mapped nodes
         # if mapping_node.g1 has an edge to parent.g1 then mappping_node.g2 must have an edge to parent.g2
 
+    def update_future_match_table(self, g1: nx.Graph, g2: nx.Graph) -> bool:
+        self.set_future_match_table(copy.deepcopy(self.parent.future_match_table))
+        # Set all nodes in in row to and column of this mapping to 0
+        nodes_g1 = list(g1.nodes())
+        nodes_g2 = list(g2.nodes())
+        index_g2 = nodes_g2.index(self.node_2)
+        self.future_match_table[nodes_g1.index(self.node_1)] = [0]*len(nodes_g2)
+        for row in self.future_match_table:
+            row[index_g2] = 0
+        self.future_match_table[nodes_g1.index(self.node_1)][index_g2] = 1
+        
+        # Remove all violating edge constraints
+            # Iterate over all 1s in table
+                # If n1 is neighbour of 1 then n2 must be neighbour of a (and with not neightbour)
+        for i1 in range(len(self.future_match_table)):
+            for i2 in range(len(self.future_match_table[i1])):
+                if(self.future_match_table[i1][i2]):
+                    #TODO make method violates edge constraint
+                    if(not g1.has_edge(self.node_1, nodes_g1[i1]) == g2.has_edge(self.node_2, nodes_g2[i2])):
+                        self.future_match_table[i1][i2] = 0
+        # Look for 0 rows
+        for row in self.future_match_table:
+            if row == [0]*len(row):
+                return False
+        return True
+
+
 
 def might_be_possible_mapping(node_g1, node_g2, g1, g2, future_match_table):
     """
@@ -116,9 +147,12 @@ def might_be_possible_mapping(node_g1, node_g2, g1, g2, future_match_table):
 def construct_a_level(parent_mapping, node_g1, unuse_nodes_g2, g1, g2):
     for current_node_g2 in unuse_nodes_g2:
         current_mapping_node = Mapping_Node(node_g1, current_node_g2)
+        # TODO set parent mapping in constructor
         current_mapping_node.set_parent(parent_mapping)
-        if (current_mapping_node.is_possible_mapping(g1, g2)):
+        is_possible = current_mapping_node.update_future_match_table(g1, g2)
+        if (current_mapping_node.is_possible_mapping(g1, g2) and is_possible):
             parent_mapping.add_child(current_mapping_node)
+            
 
 
 def is_isomorphic_brute_force(g1: nx.Graph, g2: nx.Graph):
@@ -127,6 +161,7 @@ def is_isomorphic_brute_force(g1: nx.Graph, g2: nx.Graph):
     nodes_g1 = list(g1.nodes())
     nodes_g2 = list(g2.nodes())
     future_match_table = build_future_match_table(g1, g2)
+    root_node.set_future_match_table(future_match_table)
     # Construct first level
     construct_a_level(root_node, nodes_g1[0], nodes_g2, g1, g2)
     can_be_reached = build_tree_recursive_has_leaf_been_reached(
@@ -138,7 +173,7 @@ def build_tree_recursive_has_leaf_been_reached(current_mapping_node, g1, g2, fut
     can_be_reached = False
     for child in current_mapping_node.next_nodes:
         next_node_g1, unused_nodes_g2 = child.get_nodes_for_next_level(
-            g1, g2, future_match_table)
+            g1, g2)
         if (next_node_g1):
             construct_a_level(child, next_node_g1, unused_nodes_g2, g1, g2)
             can_be_reached = build_tree_recursive_has_leaf_been_reached(
