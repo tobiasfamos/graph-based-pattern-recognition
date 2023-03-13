@@ -171,12 +171,8 @@ if __name__ == '__main__':
     matrix = np.zeros((len(graphs), len(graphs)), dtype=int)
     for u in range(len(graphs)):
         for v in range(len(graphs)):
-            if u == v:
-                matrix[u, v] = int(Ullman(
-                    graphs[u], graphs[v]))  # Graphs are identical
-            else:
-                matrix[u, v] = int(
-                    Ullman(graphs[u], graphs[v]))
+            matrix[u, v] = int(Ullman(graphs[u], graphs[v])) 
+    
 
     np.savetxt("./results/ullman_subgraph_isomorphism.csv",
                matrix, fmt="%i", delimiter=",")
