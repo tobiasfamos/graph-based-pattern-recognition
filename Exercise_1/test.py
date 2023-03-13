@@ -43,5 +43,16 @@ class TestStringMethods(unittest.TestCase):
         is_isomorphic = ex1.is_isomorphic_brute_force(graph_1, graph_2)
         self.assertFalse(is_isomorphic)
 
+    def test_build_future_match_table(self):
+        graph_1, graph_2 = self.get_graph_from_lecture_nodes()
+        future_match_table = ex1.build_future_match_table(graph_1, graph_2)
+        must_be = [[1,1,1,1,0],
+                   [0,0,1,0,0],
+                   [1,1,1,1,0],
+                   [1,1,1,1,0]]
+        self.assertEqual(future_match_table, must_be)
+
+    
+
 if __name__ == '__main__':
     unittest.main()

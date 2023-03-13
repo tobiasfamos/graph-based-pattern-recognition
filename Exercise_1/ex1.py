@@ -125,6 +125,15 @@ def build_tree_recursive_has_leaf_been_reached(current_mapping_node, g1, g2):
             break
     return can_be_reached
             
+def build_future_match_table(g1: nx.Graph, g2:nx.Graph):
+    nodes_g1 = list(g1.nodes())
+    nodes_g2 = list(g2.nodes())
+    future_match_table = [ [0]*len(nodes_g2) for i in range(len(nodes_g1))]
+    for index_1 in range(0, len(nodes_g1)):
+        for index_2 in range(0, len(nodes_g1)):
+            if g1.degree(nodes_g1[index_1]) <= g2.degree(nodes_g2[index_2]):
+                future_match_table[index_1][index_2] = 1
+    return future_match_table
 
 def Ullman(g1: nx.Graph, g2: nx.Graph) -> bool:
     """
