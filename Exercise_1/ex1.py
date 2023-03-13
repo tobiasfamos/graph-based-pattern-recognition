@@ -77,8 +77,11 @@ class Mapping_Node:
             nodes_g1.remove(current.node_1)
             nodes_g2.remove(current.node_2)
             current = current.parent
-        if(len(nodes_g1)):
+        if (len(nodes_g1)):
             node_g1 = nodes_g1[0]
+            for node in nodes_g2:
+                if (not might_be_possible_mapping(node_g1, node, g1, g2, future_match_table)):
+                    nodes_g2.remove(node)
             return node_g1, nodes_g2
         else:
             return None, None
@@ -99,6 +102,17 @@ class Mapping_Node:
         # if mapping_node.g1 has an edge to parent.g1 then mappping_node.g2 must have an edge to parent.g2
 
 
+def might_be_possible_mapping(node_g1, node_g2, g1, g2, future_match_table):
+    """
+    Returns true if the mapping is allowed acccording to the future match table 
+    """
+    nodes_g1 = list(g1.nodes())
+    nodes_g2 = list(g2.nodes())
+    index_1 = nodes_g1.index(node_g1)
+    index_2 = nodes_g2.index(node_g2)
+    return bool(future_match_table[index_1][index_2])
+
+
 def construct_a_level(parent_mapping, node_g1, unuse_nodes_g2, g1, g2):
     for current_node_g2 in unuse_nodes_g2:
         current_mapping_node = Mapping_Node(node_g1, current_node_g2)
@@ -115,32 +129,37 @@ def is_isomorphic_brute_force(g1: nx.Graph, g2: nx.Graph):
     future_match_table = build_future_match_table(g1, g2)
     # Construct first level
     construct_a_level(root_node, nodes_g1[0], nodes_g2, g1, g2)
-    can_be_reached = build_tree_recursive_has_leaf_been_reached(root_node, g1, g2, future_match_table)
+    can_be_reached = build_tree_recursive_has_leaf_been_reached(
+        root_node, g1, g2, future_match_table)
     return can_be_reached
 
 
 def build_tree_recursive_has_leaf_been_reached(current_mapping_node, g1, g2, future_match_table):
     can_be_reached = False
     for child in current_mapping_node.next_nodes:
-        next_node_g1, unused_nodes_g2 = child.get_nodes_for_next_level(g1, g2, future_match_table)
+        next_node_g1, unused_nodes_g2 = child.get_nodes_for_next_level(
+            g1, g2, future_match_table)
         if (next_node_g1):
             construct_a_level(child, next_node_g1, unused_nodes_g2, g1, g2)
-            can_be_reached = build_tree_recursive_has_leaf_been_reached(child, g1, g2, future_match_table)
+            can_be_reached = build_tree_recursive_has_leaf_been_reached(
+                child, g1, g2, future_match_table)
         else:
             can_be_reached = True
-        if(can_be_reached):
+        if (can_be_reached):
             break
     return can_be_reached
-            
-def build_future_match_table(g1: nx.Graph, g2:nx.Graph):
+
+
+def build_future_match_table(g1: nx.Graph, g2: nx.Graph):
     nodes_g1 = list(g1.nodes())
     nodes_g2 = list(g2.nodes())
-    future_match_table = [ [0]*len(nodes_g2) for i in range(len(nodes_g1))]
+    future_match_table = [[0]*len(nodes_g2) for i in range(len(nodes_g1))]
     for index_1 in range(0, len(nodes_g1)):
         for index_2 in range(0, len(nodes_g2)):
             if g1.degree(nodes_g1[index_1]) <= g2.degree(nodes_g2[index_2]):
                 future_match_table[index_1][index_2] = 1
     return future_match_table
+
 
 def Ullman(g1: nx.Graph, g2: nx.Graph) -> bool:
     """
@@ -179,9 +198,11 @@ if __name__ == '__main__':
     for u in range(len(graphs)):
         for v in range(len(graphs)):
             if u == v:
-                matrix[u, v] = int(is_isomorphic_brute_force(graphs[u], graphs[v]))  # Graphs are identical
+                matrix[u, v] = int(is_isomorphic_brute_force(
+                    graphs[u], graphs[v]))  # Graphs are identical
             else:
-                matrix[u, v] = int(is_isomorphic_brute_force(graphs[u], graphs[v]))
+                matrix[u, v] = int(
+                    is_isomorphic_brute_force(graphs[u], graphs[v]))
 
     np.savetxt("./results/ullman_subgraph_isomorphism.csv",
                matrix, fmt="%i", delimiter=",")
