@@ -64,7 +64,7 @@ class TestStringMethods(unittest.TestCase):
 
     def test_build_future_match_table(self):
         graph_1, graph_2 = self.get_graph_from_lecture_nodes()
-        future_match_table = ex1.build_future_match_table(graph_1, graph_2)
+        future_match_table = ex1.build_future_match_table({1:graph_1, 2: graph_2})
         must_be = [[1,1,1,1,1],
                    [0,0,1,0,0],
                    [1,1,1,1,0],
