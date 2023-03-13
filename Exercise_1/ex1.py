@@ -137,32 +137,17 @@ def construct_a_level(parent_mapping, node_g1, unuse_nodes_g2):
         is_possible = current_mapping_node.update_future_match_table()
         if not is_possible:
             continue
-        parent_mapping.add_child(current_mapping_node)
-            
+        parent_mapping.add_child(current_mapping_node)    
 
 
-def is_isomorphic_brute_force(g1: nx.Graph, g2: nx.Graph):
-    # Build Root
-    graphs = {1: g1, 2: g2}
-    root_node = Mapping_Node(None, None, graphs)
-    nodes_g1 = list(graphs[1].nodes())
-    nodes_g2 = list(graphs[2].nodes())
-    future_match_table = build_future_match_table(graphs)
-    root_node.set_future_match_table(future_match_table)
-    # Construct first level
-    construct_a_level(root_node, nodes_g1[0], nodes_g2)
-    can_be_reached = build_tree_recursive_has_leaf_been_reached(root_node, graphs, future_match_table)
-    return can_be_reached
-
-
-def build_tree_recursive_has_leaf_been_reached(current_mapping_node, graphs, future_match_table):
+def build_tree_recursive_has_leaf_been_reached(current_mapping_node, graphs):
     can_be_reached = False
     for child in current_mapping_node.next_nodes:
         next_node_g1, unused_nodes_g2 = child.get_nodes_for_next_level()
         if (next_node_g1):
             construct_a_level(child, next_node_g1, unused_nodes_g2)
             can_be_reached = build_tree_recursive_has_leaf_been_reached(
-                child, graphs, future_match_table)
+                child, graphs)
         else:
             can_be_reached = True
         if (can_be_reached):
@@ -192,18 +177,17 @@ def Ullman(g1: nx.Graph, g2: nx.Graph) -> bool:
     Returns:
         True if g1 is a subgraph of g2 and False otherwise
     """
-    """ 
-    // Step 1: Multiset-label determination
-2: Mi(v)={li−1(u) | u∈N(v)}foreachnodevinV andV′
-3: Sort elements in Mi(v) and concatenate them into a string si(v).
-4: si(v) = li−1(v) + si(v) // concatenate li−1(v) as prefix
-5: // Step 2: Label compression and elabeling
-6: Sort all strings si(v) for all nodes v in V and V ′
-7: Map each string si(v) to f(si(v)), such that f(si(v)) = f(si(w)) if and only if
-si(v) = si(w)
-8: Set li(v) := f(si(v)) for all nodes v in V and V ′
- """
-    return _ullman_recursive(adj_u, adj_v, p, q)
+    # Build Root
+    graphs = {1: g1, 2: g2}
+    root_node = Mapping_Node(None, None, graphs)
+    nodes_g1 = list(graphs[1].nodes())
+    nodes_g2 = list(graphs[2].nodes())
+    future_match_table = build_future_match_table(graphs)
+    root_node.set_future_match_table(future_match_table)
+    # Construct first level
+    construct_a_level(root_node, nodes_g1[0], nodes_g2)
+    can_be_reached = build_tree_recursive_has_leaf_been_reached(root_node, graphs)
+    return can_be_reached
 
 
 if __name__ == '__main__':
@@ -218,11 +202,11 @@ if __name__ == '__main__':
     for u in range(len(graphs)):
         for v in range(len(graphs)):
             if u == v:
-                matrix[u, v] = int(is_isomorphic_brute_force(
+                matrix[u, v] = int(Ullman(
                     graphs[u], graphs[v]))  # Graphs are identical
             else:
                 matrix[u, v] = int(
-                    is_isomorphic_brute_force(graphs[u], graphs[v]))
+                    Ullman(graphs[u], graphs[v]))
 
     np.savetxt("./results/ullman_subgraph_isomorphism.csv",
                matrix, fmt="%i", delimiter=",")

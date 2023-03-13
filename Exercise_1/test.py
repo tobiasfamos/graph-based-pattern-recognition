@@ -42,23 +42,23 @@ class TestStringMethods(unittest.TestCase):
     def test_self_isomorphism(self):
         graph_1 = self.get_simple_triangle_graph()
         graph_2 = self.get_simple_triangle_graph()
-        is_isomorphic = ex1.is_isomorphic_brute_force(graph_1, graph_2)
+        is_isomorphic = ex1.Ullman(graph_1, graph_2)
         self.assertTrue(is_isomorphic)
 
     def test_lecture_example(self):
         graph_1, graph_2 = self.get_graph_from_lecture_nodes()
-        is_isomorphic = ex1.is_isomorphic_brute_force(graph_1, graph_2)
+        is_isomorphic = ex1.Ullman(graph_1, graph_2)
         self.assertTrue(is_isomorphic)
 
     def test_fully_connected_not_fully_connected(self):
         graph_1 = self.get_simple_triangle_graph()
         graph_2 = self.get_fully_connected_3_nodes_graph()
-        is_isomorphic = ex1.is_isomorphic_brute_force(graph_1, graph_2)
+        is_isomorphic = ex1.Ullman(graph_1, graph_2)
         self.assertFalse(is_isomorphic)
     
     def test_huge_graph_ismorphism(self):
         graph_1, graph_2 = self.get_huge_graphs_isomorphic()
-        is_isomorphic = ex1.is_isomorphic_brute_force(graph_1, graph_2)
+        is_isomorphic = ex1.Ullman(graph_1, graph_2)
         self.assertTrue(is_isomorphic)
         
 
@@ -82,7 +82,7 @@ class TestStringMethods(unittest.TestCase):
         matrix = [ [0]*len(graphs) for i in range(len(graphs))]
         for u in range(len(graphs)):
             for v in range(len(graphs)):
-                    matrix[u] [v] = int(ex1.is_isomorphic_brute_force(graphs[u], graphs[v]))  # Graphs are identical
+                    matrix[u] [v] = int(ex1.Ullman(graphs[u], graphs[v]))  # Graphs are identical
         self.assertEqual(expected_result, matrix)
 
 
