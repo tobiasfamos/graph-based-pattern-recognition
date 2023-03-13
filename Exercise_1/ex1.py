@@ -62,6 +62,13 @@ class Mapping_Node:
         self.graphs = graphs
         self.parent = None
 
+    @staticmethod
+    def build_root_node(graphs):
+        root_node = Mapping_Node(None, None, graphs)
+        future_match_table = build_future_match_table(graphs)
+        root_node.set_future_match_table(future_match_table)
+        return root_node
+
     def set_parent(self, parent):
         self.parent = parent
     
@@ -179,11 +186,9 @@ def Ullman(g1: nx.Graph, g2: nx.Graph) -> bool:
     """
     # Build Root
     graphs = {1: g1, 2: g2}
-    root_node = Mapping_Node(None, None, graphs)
+    root_node = Mapping_Node.build_root_node(graphs)
     nodes_g1 = list(graphs[1].nodes())
     nodes_g2 = list(graphs[2].nodes())
-    future_match_table = build_future_match_table(graphs)
-    root_node.set_future_match_table(future_match_table)
     # Construct first level
     construct_a_level(root_node, nodes_g1[0], nodes_g2)
     can_be_reached = build_tree_recursive_has_leaf_been_reached(root_node, graphs)
